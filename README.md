@@ -1,1 +1,1 @@
-# legal-memsum-api
+# memsum-api
