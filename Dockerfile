@@ -9,7 +9,7 @@ WORKDIR /home
 COPY memsum-api ./
 CMD ["cd", "memsum-api"]
 RUN python -m venv venv
-RUN venv/bin/pip install -r requirements.txt
+RUN venv/bin/pip install -r requirements_cpu.txt
 RUN venv/bin/pip install gunicorn
 
 COPY boot.sh ./
