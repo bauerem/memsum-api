@@ -1,20 +1,52 @@
 from flask import Flask, request
+import json
 
 from memsum import MemSum
-memsum_hn = MemSum("model/MemSum_Final/lexis_headnotes/model.pt", "model/glove/vocabulary_200dim.pkl")
+
+
 def memsum_hn_predict(text, p_stop_thres= 0.7):
+    memsum_hn = MemSum("model/MemSum_Final/lexis_headnotes/model.pt", "model/glove/vocabulary_200dim.pkl")
+
     return memsum_hn.summarize(text, p_stop_thres=p_stop_thres)
 
-app = Flask(__name__)
+# Read file with users
+def getUsers():
+    userfile = "users.json"
+    with open(userfile) as f:
+        users = json.load(f)
+    
+    return users
 
+# Very simple bearer token check
+def checkUserAuth():
+    headers = request.headers
+    bearer = headers.get('Authorization')    # Bearer YourTokenHere
+    token = bearer.split()[1]
+
+    loggedIn = False
+
+    # Read users
+    users = getUsers()
+
+    for user in users:
+        if token == user["token"]:
+            loggedIn = True
+            break
+
+
+    return loggedIn 
+    
+app = Flask(__name__)
+    
 @app.route("/")
 def hello_world():
-    return {"text": "hello world"}
+    data = {"text": "Hello world."}
 
-@app.route("/summarize", methods=["POST"])
+@app.post("/summarize")
 def summarize():
-    if request.method == "POST":
+    loggedIn = checkUserAuth()
 
+    if loggedIn == True:
         data = request.get_json() or {}
 
         text = data.get("text", None)
@@ -29,4 +61,4 @@ def summarize():
 
         return {"summary": summary}
     
-    return "You should send POST requests to this server."
+    return "Please Authenticate", 403

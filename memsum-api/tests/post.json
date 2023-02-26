@@ -1,0 +1,7 @@
+{
+    "text": ["Hello there",
+             "The apple was falling",
+             "And the snake ate it",
+             "But the bear, he didn't"],
+    "p_stop_temp": 0.5
+}
